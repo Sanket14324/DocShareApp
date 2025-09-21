@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="fragments/general.html :: navbar(user=${user})"></div>
+
+<section class="vh-100">
+    <div class="container py-5 h-100" >
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="card shadow-2-strong" style="border-radius: 1rem;box-shadow: #0d6efd 5px 5px 20px; margin-top: 3em">
+                    <div class="card-body p-5 text-center">
+                        <h3 class="mb-5 text-primary" style="font-size:300%">Sign in</h3>
+                        <div th:if="${param.error}" class="alert alert-danger">
+                            <p>Username or password is incorrect.</p>
+                        </div>
+                        <form th:action="@{/login}" method="post" >
+
+                            <div class="form-outline form-group mb-4">
+                                <input id="username" name="username" type="email"  class="form-control form-control-lg" />
+                                <label class="form-label" for="username">Email</label>
+                            </div>
+
+                            <div class="form-outline form-group mb-4">
+                                <input id="password" name="password"  type="password"  class="form-control form-control-lg" />
+                                <label class="form-label" for="password">Password</label>
+                            </div>
+
+                            <button class="form-group btn btn-primary btn-lg btn-block" type="submit" style="box-shadow: #0d6efd 2px 2px 20px">Login</button>
+
+                        </form>
+
+                        <hr class="my-4">
+
+                        <p>Not a User ?</p>
+                        <a class="btn btn-lg btn-block " style="background-color: #dd4b39;box-shadow: #0d6efd 2px 2px 20px " th:href="@{/register}"></i> Register </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--<form th:action="/login" method="post" th:object="${}">-->
+<!--    <input type="text" name="email" placeholder="email">-->
+<!--    <input type="password" name="password" placeholder="Password">-->
+<!--    <button type="submit">Login</button>-->
+<!--</form>-->
+<script src="https://kit.fontawesome.com/d4f5b5804a.js" crossorigin="anonymous"></script>
+<!--BOOTSTRAP CSS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

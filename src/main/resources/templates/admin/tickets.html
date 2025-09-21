@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" style="min-height: 100vh">
+<head>
+    <meta charset="UTF-8">
+    <title>Tickets</title>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link th:href="@{/css/dropdown.css}" rel="stylesheet">
+</head>
+<body style=" background: radial-gradient(black, transparent)">
+<div th:insert="fragments/general.html :: navbar(user=${user})"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-12 mb-3 mb-lg-5" style="margin-top: 6em;z-index: 0;">
+            <div class="overflow-hidden card table-nowrap table-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Tickets</h5>
+                    <div class="col-md-2">
+                        <div class="input-group">
+                            <div class="form-outline">
+                                <input  type="text" class="form-control" id="titleSearchInput" placeholder="Search By Email" oninput="searchTickets(2)"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pb-2">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col"></div>
+                            <div class="col">
+                                <form th:action="@{/ticket/all}" method="get">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="startDate">Start Date:</label>
+                                            <input type="date" id="startDate" name="startDate" class="form-control">
+                                        </div>
+                                        <div class="col">
+                                            <label for="endDate">End Date:</label>
+                                            <input type="date" id="endDate" name="endDate" class="form-control">
+                                        </div>
+                                        <div class="col">
+                                            <label for="status">Status:</label>
+                                            <select name="status" id="status" class="form-select">
+                                                <option value="open">Open</option>
+                                                <option value="close">Close</option>
+                                                <option value="inProcess">In Process</option>
+                                                <option value="all">All</option>0
+                                            </select>
+                                        </div>
+                                        <div class="col d-flex justify-content-center align-items-center">
+                                            <button type="submit" class="btn btn-primary form-control mt-3">Filter</button>
+                                        </div>
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead class="small text-uppercase bg-body">
+                        <tr>
+                            <th>Title</th>
+                            <th>User</th>
+                            <th>User email</th>
+                            <th>Created At</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="align-middle" th:each="ticket : ${ticketList}" th:data="${ticket.id}" >
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <div class="h6 mb-0 lh-1" th:text="${ticket.title}"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td th:text="${ticket.user.firstName} + ' ' + ${ticket.user.lastName}"></td>
+                            <td th:text="${ticket.user.email}"></td>
+                            <td th:text="${#dates.format(ticket.createdDate, 'dd MMM yyyy')}"></td>
+                            <td class="text-end">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa fa-bars" ></i>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <li> <a  class="dropdown-item" type="button"  th:href="@{/ticketDetail(id=${ticket.id})}">Comments</a></li>
+                                        <li>
+                                            <a class="dropdown-item" href="#">
+                                                &laquo; Change Status
+                                            </a>
+                                            <ul class="dropdown-menu dropdown-submenu">
+                                                <li th:if="!${ticket.status.equals('open')}">
+                                                    <a class="dropdown-item" th:href="@{/ticket/all/update/{status}(status='open', id=${ticket.id})}">Open</a>
+                                                </li>
+                                                <li th:if="!${ticket.status.equals('inProcess')}">
+                                                    <a class="dropdown-item"  th:href="@{/ticket/all/update/{status}(status='inProcess', id=${ticket.id})}">In Process</a>
+                                                </li>
+                                                <li th:if="!${ticket.status.equals('close')}">
+                                                    <a class="dropdown-item"  th:href="@{/ticket/all/update/{status}(status='close', id=${ticket.id})}">Close</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div th:insert="fragments/general.html :: footer"></div>
+<script  type="text/javascript" th:src="@{/js/search.js}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

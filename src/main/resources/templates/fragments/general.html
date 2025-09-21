@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Fragments</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <div th:fragment="navbar(user)">
+      <nav class="col fixed-top navbar navbar-expand-lg navbar-light header-navbar">
+        <div class="container-fluid">
+          <a class="navbar-brand" th:href="@{/}" style="font-size: 1.5em">DS</a>
+
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+              <a class="nav-link active" sec:authorize="!isAuthenticated()" aria-current="page" th:href="@{/login}">Login</a>
+              <a class="nav-link active" sec:authorize="!isAuthenticated()" th:href="@{/register}">Register</a>
+              <a class="nav-link active" sec:authorize="hasAuthority('ADMIN')" th:href="@{/admin/home}">Users</a>
+              <a class="nav-link active" sec:authorize="hasAuthority('ADMIN')" th:href="@{/ticket/all}">Tickets</a>
+              <a class="nav-link active" sec:authorize="hasAuthority('USER')"  th:href="@{/}">Tickets</a>
+              <a class="nav-link active" href="#">About</a>
+            </div>
+            <div  sec:authorize="isAuthenticated()" class="user-button ms-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
+              </svg>
+              <div class="card mb-4 user-card">
+                <div class="card-body text-center ">
+                  <h5 class="my-3" th:text="${user.getFirstName()}+' '+${user.getLastName()}"></h5>
+                  <p class="text-muted mb-1" th:text="${user.getEmail()}"></p>
+                  <p class="text-muted mb-4" th:text="${user.getMobile()}"></p>
+                  <div class="d-flex justify-content-center mb-2">
+                    <a type="button" class="btn btn-primary" th:href="@{/logout}">Logout</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <div th:fragment="ticketCard(ticketDetail)">
+      <div class="col border border-dark" id="ticketCard">
+        <div class="text-center card-body" >
+          <div class="rounded-circle">
+            <svg style="width: 50px; height: 50px" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ticket" viewBox="0 0 16 16">
+              <path d="M0 4.5A1.5 1.5 0 0 1 1.5 3h13A1.5 1.5 0 0 1 16 4.5V6a.5.5 0 0 1-.5.5 1.5 1.5 0 0 0 0 3 .5.5 0 0 1 .5.5v1.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5V10a.5.5 0 0 1 .5-.5 1.5 1.5 0 1 0 0-3A.5.5 0 0 1 0 6V4.5ZM1.5 4a.5.5 0 0 0-.5.5v1.05a2.5 2.5 0 0 1 0 4.9v1.05a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-1.05a2.5 2.5 0 0 1 0-4.9V4.5a.5.5 0 0 0-.5-.5h-13Z"/>
+            </svg>
+          </div>
+          <h5 class="my-3" th:text="'Ticket Title : '+${ticketDetail.title}"></h5>
+          <p class="text-black mb-2">Created On: </p>
+          <p class="text-muted mb-1" th:text="${#dates.format(ticketDetail.createdDate, 'dd MMM yyyy')}"></p>
+        </div>
+      </div>
+    </div>
+
+    <div th:fragment="fileCard(fileList)">
+      <div class="text-center card-body">
+        <h5>Uploaded Files</h5>
+        <ul class="list-group"  style="max-height: 245px; overflow-y: auto;min-height: 245px">
+          <div th:each="file: ${fileList}">
+            <li class="list-group-item" style="display: flex; justify-content: space-between; align-items: center; ">
+              <div class="file-info">
+                <span th:text="${file.filename}" style="font-size: 12px"></span>
+              </div>
+              <div class="file-actions text-centre">
+                <a class="btn-xs" style="border:none; margin: 0.25em" th:href="@{/download/{id}(id=${file.id})}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg></a>
+                <a class="btn-xs" style="border:none; margin: 0.2em; font-size: 20px" th:href="@{/ticketDetail/file/delete/{fileId}(fileId=${file.id}, id=${ticketDetail.id})}" ><i class="fa fa-trash">&times;</i></a>
+              </div>
+            </li>
+          </div>
+        </ul>
+      </div>
+
+      <form style="margin: 1em" class="text-center" th:action="@{/ticketDetail/file/{ticketId}(ticketId=${param.id})}" method="post"  enctype="multipart/form-data">
+        <label for="fileInput" class="btn-xs " id="fileInputBtn">
+          Choose File
+          <input type="file" id="fileInput" name="files" multiple>
+        </label>
+        <button type="submit" class="btn-xs " id="fileSubmit">
+          Upload
+        </button>
+        <span class="text-center selectedFile" id="selectedFileName" ></span>
+      </form>
+
+    </div>
+
+    <div th:fragment="chatCard(chatList)" >
+      <div class="card" id="chat2">
+        <div class="card-header d-flex justify-content-between align-items-center p-3">Comments
+        </div>
+
+        <div id="messageContainer"  class="card-body" data-mdb-perfect-scrollbar="true" >
+          <div th:each="comment: ${chatList}">
+
+            <div th:if="${comment.user.email.equals( #authentication.principal.username)}"  class="d-flex flex-row justify-content-start">
+              <div class="rounded-circle avatar-container">
+                <span class="initials">
+                  <i th:text="${comment.user.firstName.substring(0, 1)+''+comment.user.lastName.substring(0, 1)}"></i>
+                </span>
+              </div>
+              <div>
+                <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;" th:text="${comment.comment}">Right</p>
+                <p class="small ms-3 mb-3 rounded-3 text-muted" th:text="${#dates.format(comment.createdDate, 'dd MMM yyyy HH:mm:ss')}"></p>
+              </div>
+            </div>
+
+            <div th:if="${!comment.user.email.equals( #authentication.principal.username)}" class="d-flex flex-row justify-content-end mb-4 pt-1">
+              <div>
+                <p class="small p-2 me-3 mb-1 text-white rounded-3 " style="background: #2a52be" th:text="${comment.comment}"></p>
+                <p class="small me-3 mb-3 rounded-3 text-muted d-flex justify-content-end" th:text="${#dates.format(comment.createdDate, 'dd MMM yyyy HH:mm:ss')}">Left</p>
+              </div>
+              <div class="rounded-circle avatar-container">
+                <span class="initials">
+                  <i th:text="${comment.user.firstName.substring(0, 1)+''+comment.user.lastName.substring(0, 1)}"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <form th:action="@{/ticketDetail/create/{ticketId}(ticketId=${param.id})}" method="post" class="card-footer text-muted d-flex justify-content-start align-items-center p-3" >
+            <img src="" th:src="@{images/user.png}"
+                 alt="avatar 3" style="width: 40px; height: 100%;margin-right: 7px">
+            <input type="text" class="form-control form-control-lg" id="comment" name="comment"
+                   placeholder="Type message">
+            <button type="submit" class="btn btn-primary" id="messageSubmit"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+              <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+            </svg></button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <div th:fragment="footer">
+      <footer class="page-footer">
+        <div class="text-white">
+          © 2023 Copyright:
+          <a class="fw-bold" href="https://docshare.com/">docshare.com</a>
+        </div>
+      </footer>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
